@@ -10,6 +10,7 @@
 	<properties>
 		<spring.version>4.0.5.RELEASE</spring.version>
 		<hibernate.version>4.3.5.Final</hibernate.version>
+		<log4j.version>1.2.17</log4j.version>
 	</properties>
 
 
@@ -48,6 +49,19 @@
 			<artifactId>spring-aop</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+ 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.6.11</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.11</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -60,6 +74,11 @@
 			<version>1.9.10</version>
 		</dependency>
 
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
 	</dependencies>
 
 
