@@ -1,8 +1,10 @@
 com/timesinternet/suggestor/aop/TimeProfiler.class
-com/timesinternet/suggestor/model/Record.class
 com/timesinternet/suggestor/dao/SuggestionsDao.class
+com/timesinternet/suggestor/cache/SuggestionsCachePopluator.class
+com/timesinternet/suggestor/cache/SuggestionsCache.class
 com/timesinternet/suggestor/dao/impl/SuggestionsDaoImpl.class
 com/timesinternet/suggestor/service/SuggestionsService.class
 com/timesinternet/suggestor/service/impl/SuggestionsServiceImpl.class
-com/timesinternet/suggestor/controller/SetTrie.class
+com/timesinternet/suggestor/model/Suggestion.class
 com/timesinternet/suggestor/controller/SuggestionsController.class
+com/timesinternet/suggestor/model/AcceptedSuggestion.class

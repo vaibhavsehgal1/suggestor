@@ -5,13 +5,15 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.timesinternet.suggestor.cache.SuggestionsCache;
 import com.timesinternet.suggestor.dao.SuggestionsDao;
-import com.timesinternet.suggestor.model.Record;
+import com.timesinternet.suggestor.model.Suggestion;
 
 @Repository
 public class SuggestionsDaoImpl implements SuggestionsDao {
@@ -19,14 +21,41 @@ public class SuggestionsDaoImpl implements SuggestionsDao {
 	@Autowired
 	private SessionFactory sessionfactory;
 
+	@Autowired
+	private SuggestionsCache suggestionsCache;
+
 	@Transactional
-	public List<String> getSuggestions(String inputText) {
-		Criteria query = sessionfactory.getCurrentSession().createCriteria(
-				Record.class);
-		query.add(Restrictions.like("value", inputText, MatchMode.START));
+	public List<String> getSuggestionsFromDatabase(String prefixText) {
+		Criteria query = sessionfactory.getCurrentSession().createCriteria(Suggestion.class);
+		query.add(Restrictions.like("value", prefixText, MatchMode.START)).setProjection(
+				Projections.property("value"));
 		@SuppressWarnings("rawtypes")
 		List list = query.list();
 		return list;
 	}
 
+	public List<String> getSuggestionsFromCache(String prefixText) {
+		return suggestionsCache.getAutoCompletions(prefixText);
+	}
+
+	@Transactional
+	public List<String> getAllSuggestionsFromDatabase() {
+		Criteria query = sessionfactory.getCurrentSession().createCriteria(Suggestion.class);
+		query.setProjection(Projections.property("value"));
+		@SuppressWarnings("rawtypes")
+		List list = query.list();
+		return list;
+	}
+
+	@Transactional
+	public void addAcceptedSuggestions(List<String> acceptedSuggestions) {
+		Criteria query = sessionfactory.getCurrentSession().createCriteria(Suggestion.class);
+		query.setProjection(Projections.rowCount());
+		query.add(Restrictions.in("value", acceptedSuggestions));
+		Number numberOfRowsWhichMatchSuggestions = (Number) query.uniqueResult();
+		if(numberOfRowsWhichMatchSuggestions.equals(acceptedSuggestions.size())) {
+			// do something
+		}
+
+	}
 }

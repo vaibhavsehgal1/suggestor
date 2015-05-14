@@ -14,8 +14,13 @@ public class SuggestionsServiceImpl implements SuggestionsService{
 	@Autowired
 	SuggestionsDao suggestionsDao ;
 	
-	public List<String> getSuggestions(String inputText) {
-		return suggestionsDao.getSuggestions(inputText);
+	public List<String> getSuggestions(String prefixText) {
+		return suggestionsDao.getSuggestionsFromCache(prefixText);
+	}
+
+	public List<String> addAcceptedSuggestions(List<String> acceptedSuggestions) {
+		suggestionsDao.addAcceptedSuggestions(acceptedSuggestions);
+		return null ;
 	}
 
 }
