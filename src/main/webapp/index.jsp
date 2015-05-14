@@ -48,14 +48,16 @@ $(document).ready(function() {
 
 	$("#suggestionsForm").submit(function(event) {
 		event.preventDefault() ;
-		alert("suggestionForm is : " + $("#suggestionsForm")) ;
-		var formData = JSON.stringify($("#suggestionsForm").serializeArray());
-		alert("formData is : "  + formData) ;
+		var inputData = $("#inputPrefix").val().trim() ;
+		if(inputData.substr(inputData.length - 1) == ',' ) {
+			inputData = inputData.substring(0, inputData.length - 1);
+		}
+		var prefixTexts = JSON.stringify(inputData.split(","));
 		$.ajax({     
 		  url: "${pageContext. request. contextPath}/suggestions",
 		  type: "POST",
 		  cache: false,
-		  data: formData,
+		  data: prefixTexts,
 		  success: function(){},
 		  dataType: 'json',
 		  contentType : 'application/json',
@@ -87,7 +89,7 @@ $(document).ready(function() {
 	        terms.push(ui.item.value);
 	        // add placeholder to get the comma-and-space at the end
 	        terms.push("");
-	        this.value = terms.join(", ");
+	        this.value = terms.join(",");
 	        return false;
 	    }
 	});

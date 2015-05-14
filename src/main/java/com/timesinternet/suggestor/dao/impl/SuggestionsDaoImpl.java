@@ -3,6 +3,7 @@ package com.timesinternet.suggestor.dao.impl;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.timesinternet.suggestor.cache.SuggestionsCache;
 import com.timesinternet.suggestor.dao.SuggestionsDao;
+import com.timesinternet.suggestor.model.AcceptedSuggestion;
 import com.timesinternet.suggestor.model.Suggestion;
 
 @Repository
@@ -49,11 +51,15 @@ public class SuggestionsDaoImpl implements SuggestionsDao {
 
 	@Transactional
 	public void addAcceptedSuggestions(List<String> acceptedSuggestions) {
-		Criteria query = sessionfactory.getCurrentSession().createCriteria(Suggestion.class);
-		query.setProjection(Projections.rowCount());
+		Session currentSession = sessionfactory.getCurrentSession();
+		Criteria query = currentSession.createCriteria(Suggestion.class);
 		query.add(Restrictions.in("value", acceptedSuggestions));
-		Number numberOfRowsWhichMatchSuggestions = (Number) query.uniqueResult();
-		if(numberOfRowsWhichMatchSuggestions.equals(acceptedSuggestions.size())) {
+		List<Suggestion> suggestionsReturnedFromDatabase = query.list() ;
+		if(suggestionsReturnedFromDatabase.size() == acceptedSuggestions.size()) {
+			for (Suggestion suggestion : suggestionsReturnedFromDatabase) {
+				currentSession.saveOrUpdate(new AcceptedSuggestion(suggestion));
+			}
+		} else {
 			// do something
 		}
 
