@@ -1,27 +1,10 @@
 <html>
 <head>
 	<title>Suggestor</title>
-	<style>
-	body {
-		font-family: Calibri;
-	}
-	table {
-		border: 1px solid;
-		border-collapse: collapse;
-	}
-	td {
-		border: 1px solid;
-	}
-	th {
-		text-align: left;
-	}
-	</style>
-	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" />
 	
-	<script type="text/javascript" 
-		src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script type="text/javascript" 
-		src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
 </head>
 <body>
@@ -30,8 +13,8 @@
 
 	
 		<form id="suggestionsForm">
-			Input Text:<input name="inputPrefix" type="text" id="inputPrefix"/> <br/>
-			<input type="submit" value="submit" />
+			<p>Input Text:<input name="inputPrefix" type="text" id="inputPrefix" size="60"/></p>
+			<p><input type="submit" value="submit" /></p>
 		</form>
 
 
@@ -58,8 +41,14 @@ $(document).ready(function() {
 		  type: "POST",
 		  cache: false,
 		  data: prefixTexts,
-		  success: function(){},
-		  dataType: 'json',
+		  success: function(response){
+			  $("#inputPrefix").val("") ;
+		      alert(response);
+		  },
+		  error: function(response){
+			  $("#inputPrefix").val("") ;
+		      alert(response.responseText);
+		  },
 		  contentType : 'application/json',
 		   });
 		});
@@ -70,6 +59,7 @@ $(document).ready(function() {
 	        	prefixText: extractLast(request.term)
 	        }, response);
 	    },
+	    minLength: 2,
 	    search: function () {
 	        // custom minLength
 	        var term = extractLast(this.value);
@@ -91,6 +81,11 @@ $(document).ready(function() {
 	        terms.push("");
 	        this.value = terms.join(",");
 	        return false;
+	    },
+	    position: {
+	        my: "left top",
+	        at: "left bottom",
+	        collision: "none"
 	    }
 	});
 	

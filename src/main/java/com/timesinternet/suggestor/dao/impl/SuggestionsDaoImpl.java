@@ -12,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.timesinternet.suggestor.aop.LogAction;
 import com.timesinternet.suggestor.cache.SuggestionsCache;
+import com.timesinternet.suggestor.constants.SuggestionMessages;
 import com.timesinternet.suggestor.dao.SuggestionsDao;
 import com.timesinternet.suggestor.model.AcceptedSuggestion;
 import com.timesinternet.suggestor.model.Suggestion;
 
 @Repository
+@LogAction
 public class SuggestionsDaoImpl implements SuggestionsDao {
 
 	@Autowired
@@ -50,17 +53,18 @@ public class SuggestionsDaoImpl implements SuggestionsDao {
 	}
 
 	@Transactional
-	public void addAcceptedSuggestions(List<String> acceptedSuggestions) {
+	public String addAcceptedSuggestions(List<String> acceptedSuggestions) {
 		Session currentSession = sessionfactory.getCurrentSession();
 		Criteria query = currentSession.createCriteria(Suggestion.class);
 		query.add(Restrictions.in("value", acceptedSuggestions));
-		List<Suggestion> suggestionsReturnedFromDatabase = query.list() ;
-		if(suggestionsReturnedFromDatabase.size() == acceptedSuggestions.size()) {
+		List<Suggestion> suggestionsReturnedFromDatabase = query.list();
+		if (suggestionsReturnedFromDatabase.size() == acceptedSuggestions.size()) {
 			for (Suggestion suggestion : suggestionsReturnedFromDatabase) {
 				currentSession.saveOrUpdate(new AcceptedSuggestion(suggestion));
 			}
+			return SuggestionMessages.SUGGESTION_SUBMIT_SUCCESS_MESSAGE;
 		} else {
-			// do something
+			throw new IllegalArgumentException();
 		}
 
 	}

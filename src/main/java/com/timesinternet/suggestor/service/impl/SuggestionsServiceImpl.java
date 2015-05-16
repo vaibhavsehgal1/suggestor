@@ -5,10 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.timesinternet.suggestor.aop.LogAction;
 import com.timesinternet.suggestor.dao.SuggestionsDao;
 import com.timesinternet.suggestor.service.SuggestionsService;
 
 @Service
+@LogAction
 public class SuggestionsServiceImpl implements SuggestionsService{
 
 	@Autowired
@@ -18,9 +20,8 @@ public class SuggestionsServiceImpl implements SuggestionsService{
 		return suggestionsDao.getSuggestionsFromCache(prefixText);
 	}
 
-	public List<String> addAcceptedSuggestions(List<String> acceptedSuggestions) {
-		suggestionsDao.addAcceptedSuggestions(acceptedSuggestions);
-		return null ;
+	public String addAcceptedSuggestions(List<String> acceptedSuggestions) {
+		return suggestionsDao.addAcceptedSuggestions(acceptedSuggestions);
 	}
 
 }

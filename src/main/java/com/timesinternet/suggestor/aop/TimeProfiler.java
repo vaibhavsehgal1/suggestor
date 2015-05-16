@@ -1,5 +1,7 @@
 package com.timesinternet.suggestor.aop;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,19 +15,31 @@ public class TimeProfiler {
 
 	private static final Logger logger = Logger.getLogger(TimeProfiler.class);
 
-	@Pointcut("execution(* com.timesinternet.suggestor.controller.SuggestionsController.*(..))")
-	/*@Pointcut("execution(* com.timesinternet.suggestor.*.(..))")*/
-	public void profileExecutionTime() {
+	@Pointcut("within(@com.timesinternet.suggestor.aop.LogAction *)")
+	public void beanAnnotatedWithLogAction() {
 	}
-	
-	@Around("profileExecutionTime()")
+
+	@Pointcut("execution(public * *(..))")
+	public void publicMethod() {
+	}
+
+	@Pointcut("publicMethod() && beanAnnotatedWithLogAction()")
+	public void publicMethodInsideAClassAnnotatedWithLogAction() {
+	}
+
+	@Around("publicMethodInsideAClassAnnotatedWithLogAction()")
 	public Object profile(ProceedingJoinPoint pjp) throws Throwable {
-		long start = System.currentTimeMillis();
-		logger.error("Going to call the method.");
+		long start = System.nanoTime();
+
 		Object output = pjp.proceed();
-		logger.error("Method execution completed.");
-		long elapsedTime = System.currentTimeMillis() - start;
-		logger.error("Method execution time: " + elapsedTime + " milliseconds.");
+
+		long elapsedTimeInNanoSeconds = System.nanoTime() - start;
+		long elapsedTimeInMilliseconds = TimeUnit.MILLISECONDS.convert(
+				elapsedTimeInNanoSeconds, TimeUnit.NANOSECONDS);
+
+		logger.debug("Method execution time of : " + pjp.getSignature()
+				+ +elapsedTimeInMilliseconds + " milliseconds.");
+
 		return output;
 	}
 
